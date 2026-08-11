@@ -1,0 +1,114 @@
+ifetcslab@ifetcslab-System-Product-Name:~$ sudo mysql
+[sudo] password for ifetcslab: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 8.0.46-0ubuntu0.24.04.3 (Ubuntu)
+
+Copyright (c) 2000, 2026, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> create database LibraryDB;
+ERROR 1007 (HY000): Can't create database 'LibraryDB'; database exists
+mysql> use LibraryDB;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> create table books(bookid int primary key, title varchar(150),authorid int, foreign key (authorid) references authors(authorid));
+ERROR 1824 (HY000): Failed to open the referenced table 'authors'
+mysql> 
+mysql> create table authors(authorid int primary key ,name  varchar(100));
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> create table books(bookid int primary key, title varchar(150),authorid int,foreign key (authorid) references authors(authorid));
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> create table borrowers(borrowerid int primary key name varchar(100));
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'name varchar(100))' at line 1
+mysql> create table borrowers (borrowerid int primary key ,name varchar(100));
+Query OK, 0 rows affected (0.03 sec)
+ysql> create table bookBorrowing(bookid int,borrowerid int ,borrowerDate timestamp default current_timestamp,foreign key(bookid) references books(bookid),foreign key(borrowerid) references borrowers(borrowerid));
+Query OK, 0 rows affected (0.06 sec)
+mysql> insert into authors(authorid,name) values(1,'J.K.Rowling'),(2,'George Orwell'),(3,'J.R.R.Tolkien');
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> insert into books(Bookid,title,authorid) values(101,'Harry Potter and the Philosopher\'s Stone',1),(102,'1984',2),(103,'The Hobbit',3),(104,'Harry Potter and the Chamber of Secrets',1);
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> insert into borrowers(borrowerid,name)values(1,'John Doe'),(2,'Jane Smith'),(3,'Alice Johnson');
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> insert into bookborrowing(bookid,borrowerid) values(101,1),(102,2),(103,3),(104,1);
+ERROR 1146 (42S02): Table 'LibraryDB.bookborrowing' doesn't exist
+mysql> insert into bookBorrowing(bookid,borrowerid) values(101,1),(102,2),(103,3),(104,1);
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> select*from authors;
++----------+---------------+
+| authorid | name          |
++----------+---------------+
+|        1 | J.K.Rowling   |
+|        2 | George Orwell |
+|        3 | J.R.R.Tolkien |
++----------+---------------+
+3 rows in set (0.00 sec)
+mysql> select*from books;
++--------+------------------------------------------+----------+
+| bookid | title                                    | authorid |
++--------+------------------------------------------+----------+
+|    101 | Harry Potter and the Philosopher's Stone |        1 |
+|    102 | 1984                                     |        2 |
+|    103 | The Hobbit                               |        3 |
+|    104 | Harry Potter and the Chamber of Secrets  |        1 |
++--------+------------------------------------------+----------+
+4 rows in set (0.00 sec)
+
+mysql> select*from borrowers;
++------------+---------------+
+| borrowerid | name          |
++------------+---------------+
+|          1 | John Doe      |
+|          2 | Jane Smith    |
+|          3 | Alice Johnson |
++------------+---------------+
+3 rows in set (0.00 sec)
+
+mysql> select*from bookBorrowing;
++--------+------------+---------------------+
+| bookid | borrowerid | borrowerDate        |
++--------+------------+---------------------+
+|    101 |          1 | 2026-08-10 15:15:24 |
+|    102 |          2 | 2026-08-10 15:15:24 |
+|    103 |          3 | 2026-08-10 15:15:24 |
+|    104 |          1 | 2026-08-10 15:15:24 |
++--------+------------+---------------------+
+4 rows in set (0.00 sec)
+mysql> select upper(b.title)as title,a.name as author from books b inner join authors a on b.authorid;
++------------------------------------------+---------------+
+| title                                    | author        |
++------------------------------------------+---------------+
+| HARRY POTTER AND THE PHILOSOPHER'S STONE | J.R.R.Tolkien |
+| HARRY POTTER AND THE PHILOSOPHER'S STONE | George Orwell |
+| HARRY POTTER AND THE PHILOSOPHER'S STONE | J.K.Rowling   |
+| 1984                                     | J.R.R.Tolkien |
+| 1984                                     | George Orwell |
+| 1984                                     | J.K.Rowling   |
+| THE HOBBIT                               | J.R.R.Tolkien |
+| THE HOBBIT                               | George Orwell |
+| THE HOBBIT                               | J.K.Rowling   |
+| HARRY POTTER AND THE CHAMBER OF SECRETS  | J.R.R.Tolkien |
+| HARRY POTTER AND THE CHAMBER OF SECRETS  | George Orwell |
+| HARRY POTTER AND THE CHAMBER OF SECRETS  | J.K.Rowling   |
++------------------------------------------+---------------+
+12 rows in set (0.01 sec)
+
+
